@@ -1,0 +1,120 @@
+CREATE VIEW DepartmenInfo As SELECT Department.DepartmentID, Department.DepartmentName, Teacher.TeacherId, Teacher.TeacherName, Teacher.TeacherCredit, Course.CourseID, Course.CourseCode,Course.CourseName,Course.CourseCredit FROM Teacher, Department, Course WHERE Teacher.TeacherDepartmentId = Department.DepartmentID AND Department.DepartmentID= Course.DepartmentId
+
+
+CREATE VIEW AllDeptWithTeacher AS SELECT Department.DepartmentID, Department.DepartmentName ,Teacher.TeacherId, Teacher.TeacherName, Teacher.TeacherCredit from Department LEFT JOIN Teacher ON Department.DepartmentID = Teacher.TeacherDepartmentId
+
+
+CREATE VIEW AllDeptWithTeacherAndCourse AS SELECT AllDeptWithTeacher.DepartmentID, AllDeptWithTeacher.DepartmentName ,AllDeptWithTeacher.TeacherId, AllDeptWithTeacher.TeacherName, Course.CourseID, Course.CourseCode,Course.CourseName,Course.CourseCredit from AllDeptWithTeacher  LEFT JOIN Course ON AllDeptWithTeacher.DepartmentID = Course.DepartmentId
+
+
+////////////////
+/****** Script for SelectTopNRows command from SSMS  ******/
+CREATE VIEW AllDeptInfo AS SELECT DISTINCT AllDeptWithTeacherAndCourse.DepartmentID, AllDeptWithTeacherAndCourse.DepartmentName ,
+AllDeptWithTeacherAndCourse.TeacherId, AllDeptWithTeacherAndCourse.TeacherName,AllDeptWithTeacherAndCourse.TeacherCredit
+,AssignCourse.CousreId AS AssignedCourseId, 
+AllDeptWithTeacherAndCourse.CourseID as CourseTId, AllDeptWithTeacherAndCourse.CourseCode, AllDeptWithTeacherAndCourse.CourseName,
+AllDeptWithTeacherAndCourse.CourseCredit FROM AllDeptWithTeacherAndCourse LEFT JOIN AssignCourse ON AllDeptWithTeacherAndCourse.TeacherId = AssignCourse.TeacherId
+/////////////////
+
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT DepartmentID,DepartmentName
+      ,TeacherId
+      ,TeacherName
+      ,TeacherCredit,
+     TeacherCredit-CourseCredit As RemainningCredit,
+      CourseTId
+      ,CourseCode
+      ,CourseName
+      ,CourseCredit
+  FROM [UniversityCRMSystem].[dbo].[AllDeptInfo] where AssignedCourseId = CourseTId
+/////////////////
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT distinct Course.CourseID,
+      Course.CourseCode
+      ,Course.CourseName
+	  
+      
+      ,Course.DepartmentId
+      ,Course.Semester
+	  ,Teacher.TeacherName,
+	  AssignCourse.TeacherId
+  FROM Course, AssignCourse , Teacher
+  where Course.DepartmentId= AssignCourse.DepartmentId and Course.CourseID=AssignCourse.CousreId and AssignCourse.TeacherId = Teacher.TeacherId 
+//////////////
+CREATE VIEW AllDeptWithCourse As SELECT distinct 
+Department.DepartmentID, Department.DepartmentName,
+
+
+	Course.CourseID,
+      Course.CourseCode
+      ,Course.CourseName
+	   ,Course.Semester
+
+	 
+
+  FROM Course,Department
+  where Department.DepartmentID=Course.DepartmentId 
+//////////////////
+/****** Script for SelectTopNRows command from SSMS  ******/
+CREATE VIEW CourseWithAsignedTeacher AS SELECT  distinct AssignCourse.DepartmentId, AssignCourse.TeacherId, Teacher.TeacherName, AssignCourse.CousreId From AssignCourse left join Teacher on AssignCourse.TeacherId = Teacher.TeacherId
+//////////
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+CREATE VIEW ViewCourseStatistics AS SELECT AllDeptWithCourse.DepartmentID ,AllDeptWithCourse.DepartmentName
+      ,AllDeptWithCourse.CourseID
+      ,AllDeptWithCourse.CourseCode
+      ,AllDeptWithCourse.CourseName
+      ,AllDeptWithCourse.Semester,
+	  CourseWithAsignedTeacher.TeacherName
+  FROM AllDeptWithCourse LEFT JOIN CourseWithAsignedTeacher ON AllDeptWithCourse.CourseID = CourseWithAsignedTeacher.CousreId
+///////////
+CREATE VIEW CourseWithRoom As SELECT a.DepartmentId, a.CourseId,  c.CourseCode, c.CourseName, a.RoomId, r.RoomNumber, a.Day, a.Fromtime, a.Totime  FROM AllocatedRoom a, Course c, Room r WHERE a.CourseId = c.CourseID and r.RoomId = a.RoomId
+
+/////
+CREATE VIEW ClassRoomSchedul AS SELECT
+	DepartmentID, 
+	CourseId,
+    CourseCode, 
+    CourseName, 
+   
+    CONCAT('R. No: ',RoomNumber,', ',Day,', ',Fromtime,' - ',Totime, '<br/>' ) as ScheduleInfo
+FROM CourseWiMthRoom
+///////
+
+CREATE VIEW SCheduleList AS SELECT t1.CourseId,
+       Units =REPLACE( (SELECT ScheduleInfo AS [data()]
+           FROM ClassRoomSchedul t2
+          WHERE t2.CourseId = t1.CourseId
+          ORDER BY ScheduleInfo
+            FOR XML PATH('')
+            ), ' ', ',')
+      FROM ClassRoomSchedul t1
+      GROUP BY CourseId ;
+
+///
+
+CREATE VIEW CourseSchedule AS SELECT C.DepartmentId, C.CourseName, C.CourseCode, S.CourseId, S.Units 
+  FROM SCheduleList S, Course C Where S.CourseId = C.CourseID
+
+///////
+
+CREATE VIEW StudentWithDepartment
+AS
+
+SELECT
+S.StudentId,S.RegistrationId,S.StudentName,S.StudentEmail,S.StudentContactNo,S.StudentDate,S.StudentAddress,S.StudentDepartmentId, D.DepartmentName   
+FROM Student S, Department D WHERE S.StudentDepartmentId = D.DepartmentID
+//////////
+CREATE VIEW StudentWithEnrollCourse AS SELECT E.StudentId, E.CourseStatus,E.CourseId,E.Date, S.RegistrationId, S.StudentName, S.StudentEmail, S.DepartmentName FROM EnrollCourse E LEFT JOIN StudentWithDepartment S ON E.StudentId = S.StudentId
+//
+CREATE VIEW
+StudentResultAndInfo 
+AS
+SELECT R.StudentId, S.StudentName,S.RegistrationId, S.StudentEmail, S.DepartmentName, R.CourseId, S.CourseCode,r.Grade   FROM StudentResult R LEFT JOIN StudentEnrolled S 
+ON
+R.StudentId = S.StudentId and R.CourseId = S.CourseId
+//////////
+
+////
