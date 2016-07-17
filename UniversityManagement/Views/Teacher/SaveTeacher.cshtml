@@ -1,0 +1,158 @@
+﻿@using UniversityManagement.Models
+
+@{
+    Layout = null;
+    List<Designation> aDesignationList = ViewBag.AllDesignation;
+    List<Department> aDepartmentList = ViewBag.AllDepartment;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SaveTeacher</title>
+    <style>
+        label.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+    <div>
+        
+        <fieldset style="width:50%">
+            <legend>Save Course</legend>
+            <form method="post" id="saveTeacher" name="saveTeacher">
+                @if (ViewBag.Message != null)
+                {
+                    <p>@ViewBag.Message</p>
+                }
+
+                <table>
+                    <tr>
+                        <td><label for="TeacherName" />Teacher Name</td>
+                        <td><input type="text" id="teacherName" name="TeacherName" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="Address" />Address</td>
+                        <td><input type="text" id="address" name="Address" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="Email" />Email</td>
+                        <td><input type="text" id="email" name="Email" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="ContactNO" />Contact No</td>
+                        <td><input type="text" id="contactNo" name="ContactNo" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="Designation" />Deesignation</td>
+                        <td>
+                            <select id="designation" name="DesignationId">
+                                <option value="default">-------------Select--------------</option>
+                                @foreach (var DSG in aDesignationList)
+                                {
+                                    <option value="@DSG.DesignationId">@DSG.DesignationName</option>
+                                }
+                            </select>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="DepartmentName" />Department Name</td>
+                        <td>
+                            <select id="departmentName" name="DepartmentId">
+                                <option value="default">-------------Select--------------</option>
+                                @foreach (var dept in aDepartmentList)
+                                {
+                                    <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                                }
+                            </select>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="Credit" />Credit To Take</td>
+                        <td><input type="text" id="creditToTake" name="CreditToTake" /></td>
+
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" name="SaveTeacher" value="Save Teacher" style="float:right"></td>
+                    </tr>
+                </table>
+            </form>
+        </fieldset>  
+    </div>
+    <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script>
+        $(document).ready(function () {
+            
+            $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+                return arg != value;
+            }, "Value must not equal arg.");
+
+            $("#saveTeacher").validate({
+                rules: {
+                    TeacherName: {
+                        required: true
+                    },
+                    Address: "required",
+                    Email: {                        
+                        required: true,
+                        email: true
+                    },
+                    ContactNo: {
+                        required: true,
+                        maxlength: 11,
+                        range: [0, 99999999999]
+
+                    }, 
+                    DesignationId: {                    
+                        valueNotEquals: "default"
+                    },
+                    DepartmentId: {                    
+                        valueNotEquals: "default"
+                    },
+
+                    CreditToTake: {
+                        required: true,
+                        range: [0, 10000],
+                        maxlength: 3
+                    }
+                },
+                messages: {
+                    CourseCredit: {
+                        range: "Please Enter Value Between 0.5 and 5.0"
+                    },
+                    DesignationId: {
+                        valueNotEquals: "Please select a Designation"
+                    },
+                    DepartmentId: {                    
+                        valueNotEquals: "Please select a Department"
+                    },
+                    ContactNo: {
+                        range: "Please Enter Correct Phone Format"
+
+                    },
+                    CreditToTake: {                   
+                        range: "Please Enter A Positive Number"
+
+        }
+                
+
+            }
+        });
+
+    });
+    </script>
+
+</body>
+</html>

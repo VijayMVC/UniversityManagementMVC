@@ -1,0 +1,30 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>UnAssignCourses</title>
+</head>
+<body>
+    <div>
+        <fieldset style="width:50%">
+            <legend>.Unassign All Courses</legend>
+            <form method="post" id="AsignCourse">
+                @if (ViewBag.Message != null)
+                {
+                    <p>@ViewBag.Message</p>
+                }
+
+              
+                <input type="submit" name="unassigned" value="Unassign Courses" style="text-align: center">
+                    
+            </form>
+        </fieldset>   
+    </div>
+</body>
+</html>

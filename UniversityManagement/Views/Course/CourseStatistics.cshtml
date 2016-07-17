@@ -1,0 +1,100 @@
+﻿@using UniversityManagement.Models
+@{
+    //ViewBag.Title = "Index";
+    List<Department> departmentList = ViewBag.AllDepartment;
+    
+
+}
+
+
+<fieldset style="width:50%">
+    <legend>All Course</legend>
+    <form method="post" id="AsignCourse" name="AssignCourse">
+        @*@if (ViewBag.Message != null)
+            {
+                <p>@ViewBag.Message</p>
+            }*@
+        
+        <label for="DepartmentIdsssss" />Department Name
+        
+
+            <select id="DepartmentIdsssss" name="DepartmentId">
+                <option value="">...Select...</option>
+                @foreach (var department in departmentList)
+                {
+                    <option value="@department.DepartmentId">@department.DepartmentName</option>
+                }
+
+
+            </select>
+
+        
+
+
+
+
+        <table id="SowCourse">
+            <tbody>
+                </tbody>
+
+        </table>
+    </form>
+    @section scripts
+{
+        @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+        <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+
+                $("#DepartmentIdsssss").change(function () {
+                    $('#SowCourse > tbody').empty();
+
+                    var departmentId = $("#DepartmentIdsssss").val();
+                    //alert(departmentId);
+                    //("#departmentId").empty();
+                    var json = { departmentId: departmentId };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetCourseByDepartmentId", "Course")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            $("#SowCourse").append('<tr><th>Course Code</th><th>Course Name</th><th> Semester</th><th>Assigned To</th></tr>');
+
+                            $.each(data, function (key, value) {
+                                //alert(key);
+                                $("#SowCourse").append('<tr><td>' + value.CourseCode + '</td>'
+                                + '<td>' + value.CourseName + '</td>'
+                                 + '<td>' + value.SemesterName + '</td>'
+                                 + '<td>' + value.TeacherName + '</td></tr>'
+                                    );
+                                //$("#CreditToTake").val(value.CreditToTake);
+
+
+                            });
+
+
+                            // ................
+                            
+
+                           
+                        }
+                    });
+
+                    
+                    
+                 
+                });
+              
+
+
+
+
+            });
+        </script>
+    }
+
+
+
+</fieldset>
+

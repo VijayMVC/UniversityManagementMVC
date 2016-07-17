@@ -1,0 +1,135 @@
+﻿@using UniversityManagement.Models
+
+@{
+    Layout = null;
+    List<Department> departmentList = ViewBag.AllDepartment;
+    List<Semester> semesterList = ViewBag.AllSemester;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CousreEntry</title>
+    <style>
+        label.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+
+
+    
+
+</head>
+<body>
+    <div>
+        <fieldset style="width:50%">
+            <legend>Save Course</legend>
+            <form method="post"  id="saveCourse" name="saveCourse">
+                @if (ViewBag.Message != null)
+                {
+                    <p>@ViewBag.Message</p>
+                }
+
+                <table>
+                    <tr>
+                        <td><label for="CourseCode" />Course Code</td>
+                        <td><input type="text" id="CourseCode" name="CourseCode" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="CourseName" />Course Name</td>
+                        <td><input type="text" id="CourseName" name="CourseName" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="CourseCredit" />Course Credit</td>
+                        <td><input type="text" id="courseCredit" name="CourseCredit" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="CourseDescription" />Course Description</td>
+                        <td><input type="text" id="courseDescription" name="CourseDescription" /></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="DepartmentName" />Department Name</td>
+                        <td>
+                            <select id="departmentName" name="DepartmentId">
+                                <option value="default">-------------Select--------------</option>
+                                @foreach (var dept in departmentList)
+                                {
+                                    <option value="@dept.DepartmentId" name="DepartmentName">@dept.DepartmentName</option>
+                                }
+                            </select>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="SemesterName" />Semester Name</td>
+                        <td>
+                            <select id="semesterName" name="SemesterId">
+                                <option value="default">-------------Select--------------</option>
+                                @foreach (var semester in semesterList)
+                                {
+                                    <option value="@semester.SemesterId" name="SemesterName">@semester.SemesterName</option>
+                                }
+                            </select>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" name="SaveCourse" value="Save Course" style="float:right"></td>
+                    </tr>
+                </table>
+            </form>
+        </fieldset> 
+    </div>
+    <script src="~/Scripts/jquery-2.2.0.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+   
+    <script>
+        $(document).ready(function () {
+            $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+                return arg != value;
+            }, "Please Select One.");
+            $("#saveCourse").validate({
+                rules: {
+                    CourseCode: {
+                        required: true,
+                        minlength:5
+                    },
+                    CourseName: "required",
+                    CourseCredit: {
+                        required: true,
+                        range: [.5, 5.0],
+                        maxlength:4
+                    },
+                    DepartmentId: {
+                        valueNotEquals: "default"
+                    },
+                    SemesterId: {
+                        valueNotEquals: "default"
+                    }
+                    
+                    
+                  
+              },
+                messages: {
+                    CourseCredit: {
+                        
+                        range: "Please Enter Value Between 0.5 and 5.0",
+                        maxlength: "Pleasw Enter At Correct Formation"
+                    }
+                  
+              }
+        });
+
+    });
+    </script>
+
+</body>
+</html>

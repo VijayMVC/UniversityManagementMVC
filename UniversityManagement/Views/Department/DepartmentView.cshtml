@@ -1,0 +1,46 @@
+﻿@using UniversityManagement.Models
+
+@{
+    Layout = null;
+    List<Department> aDepartmentList = ViewBag.AllDepartment;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>DepartmentView</title>
+    <link href="~/Style/tableCSS.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="CSSTableGenerator" style="width:35% ">
+        <fieldset style="width: 90%">
+            <legend>View All Departments</legend>
+            @if (ViewBag.AllDepartment == null)
+            {
+                <p>Department is Empty</p>
+            }
+
+
+            <table>
+                <tr><td>Code</td><td> Name</td></tr>
+
+                @{
+                    foreach (var dept in aDepartmentList)
+                    {
+                        <tr><td>@dept.DepartmentCode</td><td>@dept.DepartmentName</td></tr>
+
+                    }
+
+
+
+                }
+
+            </table>
+
+        </fieldset>
+
+    </div>
+</body>
+</html>

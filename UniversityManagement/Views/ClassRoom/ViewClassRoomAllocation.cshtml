@@ -1,0 +1,94 @@
+﻿@using UniversityManagement.Models
+@{
+    ViewBag.Title = "Index";
+    List<Department> departmentList = ViewBag.AllDepartment;
+    List<ClassRoom> roomList = ViewBag.AllClassRoom;
+
+}
+
+
+
+<fieldset style="width:50%">
+    <legend>View Class Schedule and Room Allocation Information
+</legend>
+   
+    Department: <select id="DepartmentId">
+                    <option value="">...Select...</option>
+                    @foreach (var department in departmentList)
+                    {
+                        <option value="@department.DepartmentId">@department.DepartmentName</option>
+                    }
+                
+                
+                </select>
+    
+
+    <table id="ClassSchedule">
+        
+        <tbody>
+       
+            </tbody>
+
+    </table>
+
+
+
+    @section scripts
+{
+        @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+        <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+
+                $("#DepartmentId").change(function () {
+                    $('#ClassSchedule > tbody > tr').empty();
+
+                    var departmentId = $("#DepartmentId").val();
+                    //alert(departmentId);
+                    //("#departmentId").empty();
+                    var json = { departmentId: departmentId };
+                    $.ajax({
+                        //
+                        type: "POST",
+                        url: '@Url.Action("GetCourseScheduleByDepartmentId", "ClassRoom")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            $("#ClassSchedule").append('<tr><th>Course Code</th><th>Course Name</th><th> Schedule Info</th></tr>');
+                            
+
+                            $.each(data, function (key, value) {
+                                //alert(key);
+                                $("#ClassSchedule").append('<tr><td>' + value.CourseCode + '</td>'
+                                 + '<td>' + value.CourseName + '</td>'
+                                 + '<td>' + value.ScheduleInfo + '</td></tr>'
+                                    );
+                                //$("#CreditToTake").val(value.CreditToTake);
+
+
+                            });
+
+
+                            // ................
+
+
+
+                        }
+                    });
+
+
+
+
+                });
+
+
+
+
+
+            });
+        </script>
+    }
+
+
+
+</fieldset>

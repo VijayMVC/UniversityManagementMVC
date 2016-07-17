@@ -1,0 +1,264 @@
+﻿@using UniversityManagement.Models
+@{
+    //ViewBag.Title = "Index";
+    List<Department> departmentList = ViewBag.AllDepartment;
+    List<Course> courseList = ViewBag.AllCourses;
+    List<StudentRegistration> studentList = ViewBag.AllStudent;
+
+}
+<head>
+    <style>
+        label.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<fieldset style="width:50%">
+    <legend>Save Student Result</legend>
+    <form id="viewResult" method="POST" name="SaveResultForm">
+        @if (ViewBag.Message != null)
+        {
+            <p>@ViewBag.Message</p>
+        }
+
+        <table id="target">
+            <tr>
+
+
+                <td><label for="StudentId" />Student Reg. No.</td>
+                <td>
+
+                    <select id="StudentId" name="StudentId">
+                        <option value="default">...Select...</option>
+                        @foreach (var stu in studentList)
+                        {
+                            <option value="@stu.StudentId">@stu.RegistrationId</option>
+                        }
+
+
+                    </select>
+
+                </td>
+
+
+
+
+            </tr>
+
+            <tr>
+                <td><label for="StudentName" />Name</td>
+                <td><input type="text" id="StudentName" readonly /></td>
+
+            </tr>
+            <tr>
+                <td><label for="Email" />Email</td>
+                <td><input type="text" id="Email" readonly /></td>
+
+            </tr>
+
+            <tr>
+                <td><label for="DepartmentName" />Department Name</td>
+                <td>
+
+
+                    <input type="text" id="DepartmentName" readonly />
+
+                </td>
+
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit"   id="Makepdf" name="Makepdf" value="Make PDF" style="float:right"></td>
+            </tr>
+            
+           
+
+        </table>
+        <br>
+        
+    </form>  
+    <form id="a">
+        <table id="asd">
+            </table>    
+            
+       
+
+
+        <br>
+        <table id="StudentResult">
+            
+        </table>
+    </form>
+    @section scripts
+    {
+    <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+    <script src="~/Scripts/jspdf.debug.js"></script>
+    @*<script src="~/Scripts/jspdf.js"></script>*@
+    <script src="~/Scripts/jquery.validate.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    
+    
+        <script>
+            ////
+           
+            $(document).ready(function () {
+                
+                
+                /////////
+
+                $("#Date").datepicker();
+                $('#Date').datepicker('setDate', 'today');
+                $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+                    return arg != value;
+                }, "Please Select One.");
+
+                $("#viewResult").validate({
+                    rules: {
+                        StudentId: {
+                            valueNotEquals: "default"
+                        },
+                        CourseId: {
+                            valueNotEquals: "default"
+                        },
+                        Grade: {
+                            valueNotEquals: "default"
+                        }
+                    },
+                    messages: {
+
+                        }
+                });
+
+                ///////////Load CourseCode by Department ID
+
+                $("#StudentId").change(function () {
+                    $("#CourseId").empty();
+                    $('#StudentResult').empty();
+                    var studentRegistrationId;
+                    var studentName;
+                    var studentEmail;
+                    var studentDepartment;
+
+                    var studentId = $("#StudentId").val();
+                    var json = { studentId: studentId };
+                    var json1;
+                    var departmentId;
+
+                    $.ajax({
+
+                        type: "POST",
+                        url: '@Url.Action("GettAllInfoByStudentId", "Student")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+
+                            $.each(data, function (key, value) {
+                                
+                                studentRegistrationId = value.RegistrationId;
+                                studentName = value.StudentName;
+                                studentEmail=value.StudentEmail;
+                                studentDepartment = value.DepartmentName;
+                                
+                                $("#StudentName").val(value.StudentName);
+                                $("#Email").val(value.StudentEmail);
+                                $("#DepartmentId").val(value.StudentDepartmentId);
+                                $("#DepartmentName").val(value.DepartmentName);
+                                departmentId = value.StudentDepartmentId;
+                                
+                                
+
+
+
+
+
+                            });
+                            //alert(departmentId);
+
+                            //////////////Get all Couse By Deparment ID
+                            //json1 = { departmentId: departmentId };
+
+                            $.ajax({
+
+                                type: "POST",
+                                url: '@Url.Action("GetAllStudentResultByStudentId", "Student")',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify(json),
+                                success: function (data1) {
+                                    $("#asd").append(' <tr><td>Registration Id</td><td>' + studentRegistrationId + '</td></tr>' +
+                                        '<tr><td>Student Name</td><td>' + studentName + '</td></tr>' +
+                                        '<tr><td>Student Email</td><td>' + studentEmail + '</td></tr>' +
+                                        '<tr><td>Student Department</td><td>' + studentDepartment + '</td></tr>');
+
+                                    $("#StudentResult").append(' <tr><th>Course Code</th><th>Name</th><th>Grade</th></tr>');
+                                    
+
+                                    $.each(data1, function (key, value) {
+                                        //alert(key);
+                                        $("#StudentResult").append('<tr><td>' + value.CourseCode + '</td>'
+                                            + '<td>' + value.CourseName + '</td>'
+                                            + '<td>' + value.Grade + '</td>');
+                                        //$("#CreditToTake").val(value.CreditToTake);
+
+
+                                    });
+
+
+                                    // ................
+
+
+                                    //............
+                                }
+                            });
+
+
+                            ////////////
+
+
+                            // ................
+
+
+                            //............
+                        }
+                    });
+
+
+
+
+
+
+                });
+                ///////////////
+                
+    
+
+
+            });
+            /////
+            $(function () {
+
+                var specialElementHandlers = {
+                    '#editor': function (element, renderer) {
+                        return true;
+                    }
+                };
+                $('#Makepdf').click(function () {
+                    var doc = new jsPDF();
+                    doc.fromHTML($('#a').html(), 15, 15, {
+                        'width': 170, 'elementHandlers': specialElementHandlers
+                    });
+                    doc.save('sample-file.pdf');
+                });
+            });
+            ///
+
+        </script>
+
+
+    }
+
+
+
+</fieldset>

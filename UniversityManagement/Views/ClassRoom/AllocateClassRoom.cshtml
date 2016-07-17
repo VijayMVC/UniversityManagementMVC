@@ -1,0 +1,219 @@
+﻿@using UniversityManagement.Models
+@{
+    ViewBag.Title = "Index";
+    List<Department> departmentList = ViewBag.AllDepartment;
+    List<ClassRoom> roomList = ViewBag.AllClassRoom;
+
+}
+
+
+<head>
+    <style>
+        label.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+
+
+</head>
+<fieldset style="width:50%">
+    <legend>Allocate Classrooms</legend>
+    <form method="post" id="AllocateClassRoom" name="AllocateClassRoom">
+        @if (ViewBag.Message != null)
+            {
+                <p style="color: red">@ViewBag.Message</p>
+            }
+
+        <table>
+            
+            <tr>
+
+
+                <td><label for="DepartmentIdsssss" />Department Name</td>
+                <td>
+
+                    <select id="DepartmentIdsssss" name="DepartmentId">
+                        <option value="default">...Select...</option>
+                        @foreach (var department in departmentList)
+                        {
+                            <option value="@department.DepartmentId">@department.DepartmentName</option>
+                        }
+
+
+                    </select>
+
+                </td>
+
+
+
+
+            </tr>
+            <tr>
+
+
+                <td><label for="CourseId" />Course Name</td>
+                <td>
+
+                    <select id="CourseId" name="CourseId">
+                        <option value="default">...Select...</option>
+                      
+
+
+                    </select>
+
+                </td>
+            </tr>
+            <tr>
+
+
+                <td><label for="RoomID" />Room No</td>
+                <td>
+
+                    <select id="RoomId" name="RoomId">
+                        <option value="default">...Select...</option>
+                        @foreach (var room in roomList)
+            {
+                <option value="@room.RoomId">@room.RoomNumber</option>
+            }
+
+
+                    </select>
+
+                </td>
+            </tr>
+            <tr>
+
+
+                <td><label for="DayId" />Day</td>
+                <td>
+
+                    <select id="DayId" name="Day">
+                        <option value="default">...Select...</option>
+                        <option value="Sat">Saturday</option>
+                        <option value="Sun">Sunday</option>
+                        <option value="Mon">Monday</option>
+                        <option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option>
+                        <option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option>
+
+
+                    </select>
+
+                </td>
+            </tr>
+            <tr>
+                <td><label for="Form" />Form</td>
+                <td><input name="Fromtime" /></td>
+                
+            </tr>
+            <tr>
+                <td><label for="To" />To</td>
+                <td>
+                    <input name="Totime" />
+                 </td>
+               
+            </tr>
+
+            
+           
+            
+            
+          
+           
+            <tr>
+                <td></td>
+                <td><input type="submit" name="hh" value="Allocate" style="float:right"></td>
+            </tr>
+
+        </table>
+       
+       
+        
+    </form>
+    @section scripts
+    {
+        <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/redmond/jquery-ui.css" />
+        <link href="~/Scripts/jquery.ptTimeSelect.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery.ptTimeSelect.js"></script>
+
+        <script type="text/javascript"> $(document).ready(function() {
+    $('input[name="Totime"]').ptTimeSelect();
+    $('input[name="Fromtime"]').ptTimeSelect();
+    $.validator.addMethod("valueNotEquals", function(value, element, arg) {
+        return arg != value;
+    }, "Please Select One.");
+
+    $("#AllocateClassRoom").validate({
+        rules: {
+            DepartmentId: {
+                valueNotEquals: "default"
+            },
+            CourseId: {
+                valueNotEquals: "default"
+
+            },
+            RoomId: {
+                valueNotEquals: "default"
+            },
+            Day: {
+                valueNotEquals: "default"
+            },
+            Fromtime :{
+                required: true
+            },
+            Totime: {
+                required: true
+            }
+        },
+        messages: {
+        }
+    });
+    ///////////Load CourseCode by Department ID
+    $("#DepartmentIdsssss").change(function() {
+        $("#CourseId").empty();
+
+        var departmentId = $("#DepartmentIdsssss").val();
+        var json = { departmentId: departmentId };
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GettAllCourseByDepartmentId", "ClassRoom")',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(json),
+            success: function(data) {
+
+                $.each(data, function(key, value) {
+                    //alert(key);
+                    $("#CourseId").append('<option value=' + value.CourseId + '>' + value.CourseCode + '</option>');
+                    //$("#CreditToTake").val(value.CreditToTake);
+
+
+                });
+
+
+                // ................
+
+
+                //............
+            }
+        });
+
+        
+    });
+    ///////////////
+
+
+}); </script>
+       
+        
+    }
+
+
+
+</fieldset>
+

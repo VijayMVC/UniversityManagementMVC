@@ -1,0 +1,188 @@
+﻿@using UniversityManagement.Models
+@{
+    //ViewBag.Title = "Index";
+    List<Department> departmentList = ViewBag.AllDepartment;
+    List<StudentRegistration> afterRegistration = ViewBag.AfterRegistration;
+
+
+}
+<head>
+    <style>
+        label.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+
+    
+</head>
+
+
+<fieldset style="width:50%">
+    <legend>Registration</legend>
+    <form method="post" id="SaveStudent" name="Register">
+        @if (afterRegistration!= null)
+        {
+            <table>
+            @foreach (var reg in afterRegistration)
+            {
+                <tr><td>Registration ID<td>@reg.RegistrationId</td></tr>
+                <tr><td>Student Name<td>@reg.StudentName</td></tr>
+                <tr><td>Student Email<td>@reg.StudentEmail</td></tr>
+                <tr><td>Student Contact NO<td>@reg.StudentContactNo</td></tr>
+                <tr><td>Date<td>@reg.StudentDate</td></tr>
+                <tr><td>Address<td>@reg.StudentAddress</td></tr>
+                <tr><td>Department Name<td>@reg.DepartmentName</td></tr>
+                
+                
+            }
+                </table>
+
+        }
+
+        
+
+
+       
+
+
+
+
+
+
+        <table >
+            
+            <tr>
+                
+                <td><label for="Student Name" />Student Name</td>
+                <td><input type="text" name="StudentName"/> </td>
+            </tr>
+            <tr>
+
+                <td><label for="Email" />Email</td>
+                <td><input type="text" name="StudentEmail"/> </td>
+            </tr>
+           
+            <tr>
+
+                <td><label for="ContactNo" />Contact No</td>
+                <td><input type="text" name="StudentContactNo"/> </td>
+            </tr>
+            <tr>
+
+                <td><label for="Data" />Date</td>
+                <td><input id="datepicker" name="StudentDate" /></td>
+            </tr>
+            <tr>
+                <td><label for="Address"/>Address</td>
+                <td><input type="text" name="StudentAddress"/></td>
+            </tr>
+            <tr>
+                <td><label for="DepartmentIdsssss" />Department Name</td>
+                <td><select id="DepartmentIdsssss" name="StudentDepartmentId">
+                        <option value="default">...Select...</option>
+                        @foreach (var department in departmentList)
+                        {
+                            <option value="@department.DepartmentId">@department.DepartmentName</option>
+                        }
+
+
+                    </select></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" name="SaveStudent" value="Register" style="float:right"></td>
+            </tr>
+
+
+        </table>
+    </form>
+    <table id="ShowInformation">
+        
+    </table>
+
+    @section scripts
+{
+        @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+        <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        
+        <script src="~/Scripts/jquery.validate.js"></script>
+
+        
+        <script>
+            $(document).ready(function () {
+                $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+                    return arg != value;
+                }, "Please Select One.");
+                $("#datepicker").datepicker();
+                $('#datepicker').datepicker('setDate', 'today');
+                
+
+                $("#SaveStudent").validate({
+                    rules: {
+                        StudentName: {
+                            required: true
+                        },
+                        StudentAddress: "required",
+                        StudentEmail: {
+                            required: true,
+                            email: true
+                        },
+                        StudentContactNo: {
+                            required: true,
+                            maxlength: 11,
+                            range: [0, 99999999999]
+
+                        },
+                        DesignationId: {
+                            valueNotEquals: "default"
+                        },
+                        StudentDepartmentId: {
+                            valueNotEquals: "default"
+                        },
+
+                        CreditToTake: {
+                            required: true,
+                            range: [0, 10000],
+                            maxlength: 3
+                        }
+                    },
+                    messages: {
+                        CourseCredit: {
+                            range: "Please Enter Value Between 0.5 and 5.0"
+                        },
+                        DesignationId: {
+                            valueNotEquals: "Please select a Designation"
+                        },
+                        DepartmentId: {
+                            valueNotEquals: "Please select a Department"
+                        },
+                        StudentContactNo: {
+                            range: "Please Enter Correct Phone Format"
+
+                        },
+                        CreditToTake: {
+                            range: "Please Enter A Positive Number"
+
+                        }
+
+
+                    }
+                });
+               
+
+
+
+
+
+            });
+        </script>
+    }
+
+
+
+</fieldset>
+

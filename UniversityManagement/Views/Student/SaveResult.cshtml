@@ -1,0 +1,228 @@
+﻿@using UniversityManagement.Models
+@{
+    //ViewBag.Title = "Index";
+    List<Department> departmentList = ViewBag.AllDepartment;
+    List<Course> courseList = ViewBag.AllCourses;
+    List<StudentRegistration> studentList = ViewBag.AllStudent;
+
+}
+<head>
+    <style>
+        label.error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<fieldset style="width:50%">
+    <legend>Save Student Result</legend>
+    <form method="post" id="saveResult" name="SaveResultForm">
+        @if (ViewBag.Message != null)
+        {
+            <p>@ViewBag.Message</p>
+        }
+
+        <table>
+            <tr>
+
+
+                <td><label for="StudentId"/>Student Reg. No.</td>
+                <td>
+
+                    <select id="StudentId" name="StudentId">
+                        <option value="default">...Select...</option>
+                        @foreach (var stu in studentList)
+                        {
+                            <option value="@stu.StudentId">@stu.RegistrationId</option>
+                        }
+
+
+                    </select>
+
+                </td>
+
+
+
+
+            </tr>
+
+            <tr>
+                <td><label for="StudentName" />Name</td>
+                <td><input type="text" id="StudentName" /></td>
+
+            </tr>
+            <tr>
+                <td><label for="Email" />Email</td>
+                <td><input type="text" id="Email" /></td>
+
+            </tr>
+
+            <tr>
+                <td><label for="DepartmentName" />Department Name</td>
+                <td>
+                   
+
+                    <input type="text" id="DepartmentName" />
+
+                </td>
+
+            </tr>
+            <tr>
+                <td><label for="CourseId" />CourseCode</td>
+                <td>
+                    <select id="CourseId" name="CourseId">
+                        <option value="default">-------------Select--------------</option>
+
+                    </select>
+                </td>
+
+
+
+            </tr>
+            <tr>
+                <td><label for="Grade" />Select Grade Letter</td>
+                <td>
+                    <select id="Grade" name="Grade">
+                        <option value="default">-------------Select--------------</option>
+                        <option value="A+">A+</option>
+                        <option value= "A">A</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B">B</option>
+                        <option value="B-">B-</option>
+                        <option value="C+">C+</option>
+                        <option value= "C">C</option>
+                        <option value="C-">C-</option>
+                        <option value="D+">D+</option>
+                        <option value= "D">D</option>
+                        <option value="D-">D-</option>
+                        <option value= "F">F</option>
+
+                    </select>
+                </td>
+
+
+
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" name="SaveResult" value="Save Result" style="float:right"></td>
+            </tr>
+
+        </table>
+    </form>
+    @section scripts
+    {
+        
+        <script src="~/Scripts/jquery-2.2.0.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $("#Date").datepicker();
+                $('#Date').datepicker('setDate', 'today');
+
+                $.validator.addMethod("valueNotEquals", function(value, element, arg) {
+                    return arg != value;
+                }, "Please Select One.");
+
+                $("#saveResult").validate({
+                    rules: {
+                        StudentId: {
+                            valueNotEquals: "default"
+                        },
+                        CourseId: {
+                            valueNotEquals: "default"
+                        },
+                        Grade: {
+                            valueNotEquals: "default"
+                        }
+                    },
+                    messages: {
+                        
+                    }
+                });
+
+                ///////////Load CourseCode by Department ID
+
+                $("#StudentId").change(function() {
+                    $("#CourseId").empty();
+
+                    var studentId = $("#StudentId").val();
+                    var json = { studentId: studentId };
+                    var json1;
+                    var departmentId;
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GettAllInfoByStudentId", "Student")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function(data) {
+
+                            $.each(data, function(key, value) {
+                                $("#StudentName").val(value.StudentName);
+                                $("#Email").val(value.StudentEmail);
+                                $("#DepartmentId").val(value.StudentDepartmentId);
+                                $("#DepartmentName").val(value.DepartmentName);
+                                departmentId = value.StudentDepartmentId;
+
+
+                            });
+                            //alert(departmentId);
+
+                            //////////////Get all Couse By Deparment ID
+                            //json1 = { departmentId: departmentId };
+
+                            $.ajax({
+                                type: "POST",
+                                url: '@Url.Action("GetAllEnrollCourseByStudentId", "Student")',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify(json),
+                                success: function(data1) {
+                                    $("#CourseId").append('<option value="default">...Select...</option>');
+
+                                    $.each(data1, function(key, value) {
+                                        //alert(key);
+                                        $("#CourseId").append('<option value=' + value.CourseId + '>' + value.CourseCode + '</option>');
+                                        //$("#CreditToTake").val(value.CreditToTake);
+
+
+                                    });
+
+
+                                    // ................
+
+
+                                    //............
+                                }
+                            });
+
+
+                            ////////////
+
+
+                            // ................
+
+
+                            //............
+                        }
+                    });
+
+
+                });
+                ///////////////
+
+
+            });
+
+        </script>
+
+
+    }
+
+
+
+</fieldset>

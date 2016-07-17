@@ -1,0 +1,103 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>TestAssignCourse</title>
+</head>
+<body>
+    <div>
+        
+        <form id="hh" name="hh" method="post">
+            @if (ViewBag.Message != null)
+            {
+                <p>@ViewBag.Message</p>
+            }
+            <table>
+                <tr>
+
+
+                    <td><label for="DepartmentIdsssss" />Department Name</td>
+                    <td>
+
+                        <select id="DepartmentIdsssss" name="DepartmentId">
+                            @*<option value="">...Select...</option>
+            @foreach (var department in departmentList)
+            {
+                <option value="@department.DepartmentId">@department.DepartmentName</option>
+            }*@
+
+
+                        </select>
+
+                    </td>
+
+
+
+
+                </tr>
+                <tr>
+                    <td><label for="TeacherId" />Teacher Name</td>
+                    <td>
+                        <select id="TeacherId" name="TeacherId">
+
+                            <option value="">...Select...</option>
+                        </select>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td><label for="CreditToTake" />Credit To Take</td>
+                    <td><input type="text" id="CreditToTake" name="CreditToTake" /></td>
+
+                </tr>
+                <tr>
+                    <td><label for="RemainningCredit" />Remainning Credit</td>
+                    <td><input type="text" id="RemainningCredit" name="RemainningCredit" /></td>
+
+                </tr>
+                <tr>
+                    <td><label for="CourseCode" />CourseCode</td>
+                    <td>
+                        <select id="CourseId" name="CourseId">
+                            <option>-------------Select--------------</option>
+
+                        </select>
+                    </td>
+
+
+
+                </tr>
+                <tr>
+                    <td><label for="CourseName" />Course Name</td>
+                    <td>
+                        <input type="text" id="CourseName" name="CourseName" />
+
+                    </td>
+
+                </tr>
+                <tr>
+                    <td><label for="CourseCredit" />Course Credit</td>
+                    <td>
+                        <input type="text" id="CourseCredit" name="CourseCredit" />
+
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" name="hh" value="hh" style="float:right"></td>
+                </tr>
+            </table>
+        </form>
+
+    </div>
+</body>
+</html>
